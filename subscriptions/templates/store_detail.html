@@ -1,0 +1,58 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+{% import 'macros/mobile_nav.j2' as macros %}
+
+{{ macros.mobile_nav('Store Detail', '#', back, current_user) }}
+
+<div class="container">
+
+<div class="row p-3 m-1 bg-light">
+  <div class="col-lg-5 p-0 m-0">
+    <img class="img-fluid" src="https://ipl-subscriptions-artwork.s3.amazonaws.com/{{ inventory.issue_id }}.jpg">
+  </div>
+  <div class="col-lg-7 pr-0">
+    <div class="row mt-3">
+      <div class="col">
+        <span class="h4">{{ inventory.title }}</span>
+      </div>
+    </div>
+    <div class="row mt-3">
+      <div class="col-xl-2 col-lg-3 text-center text-sm-left font-weight-bold">Publisher</div>
+      <div class="col-xl-10 col-lg-9 text-center text-sm-left">{{ inventory.publisher.name }}</div>
+    </div>
+    <div class="row">
+      <div class="col">
+        {% for role, creators in inventory.groupCreatorsByRole().items() %}
+          <div class="row mt-2">
+            <div class="col-xl-2 col-lg-3 text-center text-sm-left font-weight-bold">{{ role }}</div>
+            <div class="col-xl-10 col-lg-9 text-center text-sm-left">{{ ", ".join(creators) }}</div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+    <div class="row mt-2">
+      <div class="col-xl-2 col-lg-3 text-center text-sm-left font-weight-bold">Description</div>
+      <div class="col-xl-10 col-lg-9 text-center text-sm-left">{{ inventory.description }}</div>
+    </div>
+    <div class="row mt-2">
+      <div class="col-xl-2 col-lg-3 text-center text-sm-left font-weight-bold">Price</div>
+      <div class="col-xl-10 col-lg-9 text-center text-sm-left">${{ inventory.web_formatted_sale_or_retail_price()|safe }}</div>
+    </div>
+    <div class="row mt-2">
+      <div class="col text-center text-sm-left">
+        <form action="{{ url_for('add_to_shopping_cart') }}" method="POST">
+          {{ form.hidden_tag() }}
+          {{ form.issue_id }}
+          {{ form.units }}
+          {{ form.submit(class_="btn btn-success") }}
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+{% endblock %}

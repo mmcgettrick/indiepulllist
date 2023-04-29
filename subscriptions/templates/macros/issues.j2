@@ -1,0 +1,69 @@
+{% macro render_issue(issue, order, today, show_checkbox) %}
+<div class="row m-2 p-2 bg-white">
+  <div class="col-11 m-0 p-0">
+    <div class="row">
+      <div class="col-sm-3 col text-center">
+        <img class="my-1 ml-3 float-sm-left issue-img" src="https://d2fb3otj4xmuxd.cloudfront.net/{{ issue.item_code }}.jpg" onerror="this.src='https://ipl-subscriptions-artwork.s3.amazonaws.com/ImageComingSoon.png';">
+      </div>
+      <div class="col-sm-9 col">
+        <div class="row mt-2">
+          <div class="col text-center text-sm-left font-weight-bold">{{ issue.title }}</div>
+        </div>
+        <div class="row mt-2">
+          <div class="col-lg-5 text-center text-sm-left font-weight-bold">Order By Date:</div>
+          {% if today > issue.foc_date %}
+          <div class="col-lg-7 text-center text-sm-left text-danger">{{ issue.foc_date }}</div>
+          {% elif (issue.foc_date - today).days < 7 %}
+          <div class="col-lg-7 text-center text-sm-left text-warning">{{ issue.foc_date }} ({{ (issue.foc_date - today).days }} days left to order!)</div>
+          {% else %}
+          <div class="col-lg-7 text-center text-sm-left">{{ issue.foc_date }}</div>
+          {% endif %}
+        </div>
+        <div class="row mt-2">
+          <div class="col-lg-5 text-center text-sm-left font-weight-bold">Release Date:</div>
+          <div class="col-lg-7 text-center text-sm-left">{{ issue.est_ship_date }}</div>
+        </div>
+        <div class="row mt-2">
+          <div class="col-lg-5 text-center text-sm-left font-weight-bold">Price:</div>
+          <div class="col-lg-7 text-center text-sm-left">${{ issue.retail_price }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {%- if show_checkbox==True %}
+  <div class="col-1">
+    {%- if order==None %}
+    {% if today > issue.foc_date %}
+    <input class="form-check-input ml-auto" id="issue.{{ issue.item_code }}.selected" name="issue.{{ issue.item_code }}.selected" type="checkbox" onclick="changeIssueState(this);" disabled>
+    {% else %}
+    <input class="form-check-input ml-auto" id="issue.{{ issue.item_code }}.selected" name="issue.{{ issue.item_code }}.selected" type="checkbox" onclick="changeIssueState(this);">
+    {% endif %}
+    <input id='issue.{{ issue.item_code }}.current' name='issue.{{ issue.id }}.current' type='hidden' value='0'>
+    <input id='issue.{{ issue.item_code }}.initial' name='issue.{{ issue.item_code }}.initial' type='hidden' value='0'>
+    {%- else %}
+    {% if today > issue.foc_date %}
+    <input class="form-check-input ml-auto" id="issue.{{ issue.item_code }}.selected" name="issue.{{ issue.item_code }}.selected" type="checkbox" onclick="changeIssueState(this);" checked disabled>
+    {% else %}
+    <input class="form-check-input ml-auto" id="issue.{{ issue.item_code }}.selected" name="issue.{{ issue.item_code }}.selected" type="checkbox" onclick="changeIssueState(this);" checked>
+    {% endif %}
+    <input id='issue.{{ issue.item_code }}.current' name='issue.{{ issue.item_code }}.current' type='hidden' value='1'>
+    <input id='issue.{{ issue.item_code }}.initial' name='issue.{{ issue.item_code }}.initial' type='hidden' value='1'>
+    {%- endif %}
+  </div>
+  {%- else %}
+  <div class="col-1"></div>
+  {%- endif %}
+</div>
+{% endmacro %}
+
+{% macro units_select(id,n) %}
+<select class="form-control custom-select custom-select-sm" id="issue.{{ id }}.units" name="issue.{{ id }}.units">
+  {%- for i in range(0, 6) %}
+    {%- if i==n %}
+    <option selected>{{ i }}</option>
+    {%- else %}
+    <option>{{ i }}</option>
+    {%- endif %}
+  {%- endfor %}
+</select>
+{%- endmacro %}

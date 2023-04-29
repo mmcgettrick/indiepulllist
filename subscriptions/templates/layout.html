@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Rubik">
+  <style>
+    .nav-pills .nav-link.active {
+      color: white !important;
+      background-color: grey;
+    }
+    /*#publishers input {
+      margin-right: 5px;
+    }*/
+    .main-container {
+      margin-left: .5rem!important;
+      margin-right: .5rem!important;
+      padding-left: 1.5rem!important;
+      padding-right: 1.5rem!important;
+    }
+    .detail-img {
+      width: 360px;
+    }
+    .issue-img {
+      width: 80px;
+    }
+    .product-card {
+      width: 180px;
+    }
+    .series-card {
+      width: 320px;
+    }
+    @media screen and (max-width: 991px) {
+      .detail-img {
+        width: 240px;
+      }
+      .product-card {
+        width: 160px;
+      }
+    }
+    @media screen and (max-width: 767px) {
+      .detail-img {
+        width: 180px;
+      }
+      .product-card {
+        width: 140px;
+      }
+      .main-container {
+        margin-left: 0.25rem!important;
+        margin-right: 0.25rem!important;
+        padding-left: 0.25rem!important;
+        padding-right: 0.25rem!important;
+      }
+      .main-nav {
+        display: none;
+      }
+    }
+    @media screen and (max-width: 576px) {
+      .issue-img {
+        width: 120px;
+      }
+    }
+  </style>
+  <title>IndiePullList</title>
+</head>
+
+<body style="font-family: 'Rubik', sans-serif">
+  {% include "includes/nav2.html" %}
+
+  {% with messages = get_flashed_messages(with_categories=True) %}
+  {% if messages %}
+  {% for category, message in messages %}
+  <div class="alert alert-{{ category }} alert-dismissible fade show py-3 my-0" role="alert">
+    <span class="">{{ message }}</span>
+    <button type="button" class="close mt-1" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  {% endfor %}
+  {% endif %}
+  {% endwith %}
+
+  {% block content %}
+  {% endblock %}
+  {% include "includes/footer.html" %}
+
+  <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+  <script>
+  function changeIssueState(checkbox) {
+    currentId = checkbox.id.replace("selected","current");
+    currentElement = document.getElementById(currentId);
+    currentElement.value = (checkbox.checked==true) ? "1" : "0";
+  }
+
+  function updateShippingMethod(element) {
+    form = element.form
+    form.shipping_method_id.value = element.value
+    form.submit();
+  }
+
+  function decrementUnitsForIssue(id) {
+    form = document.getElementById(id);
+    form.units.value = parseInt(form.units.value) - 1;
+    form.submit();
+  }
+
+  function incrementUnitsForIssue(id) {
+    form = document.getElementById(id);
+    form.units.value = parseInt(form.units.value) + 1;
+    form.submit();
+  }
+
+  function removeFromCart(id) {
+    form = document.getElementById(id);
+    form.remove.value = 1;
+    form.submit();
+  }
+
+  function unsubscribe(id, name) {
+    rtnVal = confirm('Are you sure you would like to unsubscribe from ' + name + '?');
+    if(rtnVal==true) {
+      window.location = '/unsubscribe/' + id
+    }
+  }
+  </script>
+
+</body>
+
+</html>

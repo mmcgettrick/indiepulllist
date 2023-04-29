@@ -1,0 +1,48 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<nav>
+  <ol class="breadcrumb bg-transparent mb-0 mt-2 pb-0">
+    <li class="breadcrumb-item"><a href="{{ url_for('index') }}">Home</a></li>
+    <li class="breadcrumb-item"><a href="{{ url_for('series') }}">Series</a></li>
+    <li class="breadcrumb-item active">{{ series.name }}</li>
+  </ol>
+</nav>
+
+<div class="row p-3 m-1 bg-light">
+  <div class="col p-0 m-0">
+    <img class="float-left mr-4" style="width: 450px" src="{{ series.artwork_url }}">
+    <div class="container pr-0">
+      <div>
+        <span class="h1">{{ series.name }}</span>
+        {% if current_user.is_authenticated %}
+          {% if smap.get(series.id, False) %}
+          <button class="btn btn-secondary float-right" disabled>Subscribed</button>
+          {% else %}
+          <a href="{{ url_for('subscribe', id=series.id) }}" class="btn btn-primary float-right">Subscribe</a>
+          {% endif %}
+        {% endif %}
+      </div>
+      <div class="h4">Creators:</div>
+      <p>
+      {% for c in series.creators %}
+        {{ c.creator_role.name }}: {{ c.creator.name }}<br>
+      {% endfor %}
+      </p>
+      <div class="h4">Upcoming issues:</div>
+      {% for issue in issues %}
+      <div class="row p-2">
+        <img class="float-left" style="width: 80px" src="https://ipl-subscriptions-artwork.s3.amazonaws.com/{{ issue.item_code }}.jpg">
+        <p class="px-2">
+          {{ issue.title }}<br>
+          <span class="font-weight-bold">Release Date:</span> {{ issue.est_ship_date }}<br>
+          <span class="font-weight-bold">Price:</span> ${{ issue.retail_price }}<br>
+        </p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+{% endblock %}

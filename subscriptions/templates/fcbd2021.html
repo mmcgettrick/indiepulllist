@@ -1,0 +1,55 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+{% import 'macros/mobile_nav.j2' as macros %}
+
+{{ macros.mobile_nav('FCBD2021', '#', url_for('index'), current_user) }}
+
+<div class="container-fluid main-container">
+  <form action="/fcbd2021order" method='POST'>
+  <div class="h2 py-1 my-1">{{ title }}</div>
+  <div class="h6 py-3 my-1">
+    <p>
+    Terms:<br>
+    <ul>
+    <li>FCBD comic books are free to IPL customers (limit of one copy of each title per customer).</li>
+    <li>There will be a $0.50 surcharge per book if you would like your order bagged/boarded.</li>
+    <li>All orders will be invoiced via PayPal. Please provide an accurate PayPal email to ensure timely processing.</li>
+    </ul><br>
+    Shipping rates:<br>
+    <ul>
+    <li>10 books or less - $7.70</li>
+    <li>11 to 20 books - $13.75</li>
+    <li>20+ books - $19.30</li>
+    </ul>
+    </p>
+    <div class="form-group">
+      <label for="paypal_email">PayPal Email Address</label>
+      <input type="email" class="form-control" id="paypal_email" name="paypal_email">
+    </div>
+    <div class="form-check">
+      <input type="checkbox" id="bagboard" name="bagboard">
+      <label class="form-check-label" for="bagboard">Bag & Board for $0.50 per item?</label>
+    </div>
+  </div>
+  <div class="row px-2">
+    <div class="col">
+      <div class="row">
+        {% for i in issues %}
+          <div class="col-lg-7 col-11 p-1 m-1">
+            <img class="float-left pr-2" style="width: 120px;" src="https://d2fb3otj4xmuxd.cloudfront.net/{{ i[0] }}.jpg">
+            <div class="form-check">
+              <input type="checkbox" id="{{i[0]}}" name="{{i[0]}}">
+              <label class="form-check-label" for="{{i[0]}}">{{ i[1]|safe }}</label>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  <button type="submit" class="btn btn-primary">Submit Order</button>
+  </form>
+</div>
+
+{% endblock %}

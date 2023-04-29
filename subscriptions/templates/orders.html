@@ -1,0 +1,80 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+{% import 'macros/mobile_nav.j2' as macros %}
+
+{{ macros.mobile_nav('Orders', '#', url_for('index'), current_user) }}
+
+<div class="container">
+  <div class="h1 p-3 m-1 d-none d-md-block">{{ title }}</div>
+  {% if orders|list|length == 0 %}
+  <div class="row p-3 m-1 bg-light">
+    <div class="col text-center">No orders... yet!</div>
+  </div>
+  {% else %}
+    {% for order in orders %}
+    <div class="accordion" id="a-{{ order.id }}">
+      <div class="row p-2 m-1 bg-light">
+        <div class="col-lg-6 col px-0">
+          <button class="btn btn-link stretched-link collapsed text-left text-nowrap" style="text-decoration: none" type="button" data-toggle="collapse" data-target="#o-{{ order.id }}">
+            Order #{{ order.paypal_order_id }}
+          </button>
+        </div>
+        <div class="col-lg-6 col d-none d-md-block text-md-right mt-2">{{ order.formatted_date() }}</div>
+        <div class="col text-left d-md-none mt-2">{{ order.compressed_formatted_date() }}</div>
+      </div>
+      <div id="o-{{ order.id }}" class="row p-0 m-0 collapse" data-parent="#a-{{ order.id }}">
+        <div class="col p-0 m-0">
+          <div class="row py-3 m-1 border-bottom">
+            <div class="col-lg-9 d-none d-lg-block">Title</div>
+            <div class="col-lg-1 text-right d-none d-lg-block">Price</div>
+            <div class="col-lg-1 text-right d-none d-lg-block">Units</div>
+            <div class="col-lg-1 text-right d-none d-lg-block">Total</div>
+            <div class="col d-lg-none">Items</div>
+          </div>
+          {% for item in order.items %}
+            <div class="row py-3 m-1 border-bottom">
+              <div class="col-lg-9 d-none d-lg-block">{{ item.issue.title }}</div>
+              <div class="col-lg-1 text-right d-none d-lg-block">${{ item.unit_price }}</div>
+              <div class="col-lg-1 text-right d-none d-lg-block">{{ item.units }}</div>
+              <div class="col-lg-1 text-right d-none d-lg-block">${{ item.total_price }}</div>
+              <div class="col text-left d-lg-none">
+                {{ item.issue.title }}<br>
+                Price: {{ item.unit_price }}<br>
+                Units: {{ item.units }}<br>
+                Total: {{ item.total_price }}
+              </div>
+            </div>
+          {% endfor %}
+          <div class="row py-3 m-1 border-bottom">
+            <div class="col-lg-9 col-4 font-weight-bold text-lg-right">Subtotal</div>
+            <div class="col-lg-3 col-8 text-right">${{ order.subtotal }}</div>
+          </div>
+          <div class="row py-3 m-1 border-bottom">
+            <div class="col-lg-9 col-4 font-weight-bold text-lg-right">Discount</div>
+            <div class="col-lg-3 col-8 text-right">
+              {% if order.discount > 0 %}
+              <span class="text-muted mr-2">({{ order.coupon_code }})</span>
+              <span class="text-danger">-${{ order.discount }}</span>
+              {% else %}
+              <span class="">${{ order.discount }}</span>
+              {% endif %}
+            </div>
+          </div>
+          <div class="row py-3 m-1 border-bottom">
+            <div class="col-lg-9 col-4 font-weight-bold text-lg-right">Shipping</div>
+            <div class="col-lg-3 col-8 text-right">${{ order.shipping }}</div>
+          </div>
+          <div class="row py-3 m-1 border-bottom">
+            <div class="col-lg-9 col-4 font-weight-bold text-lg-right">Total</div>
+            <div class="col-lg-3 col-8 text-right">${{ order.total }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  {% endif %}
+</div>
+
+{% endblock %}

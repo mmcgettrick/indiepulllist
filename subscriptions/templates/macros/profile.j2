@@ -1,0 +1,43 @@
+{%- macro shipping_frequency_select(n) %}
+<select class="form-control" id="shipping_frequency" name="shipping_frequency">
+  {%- if n==1 %}
+  <option value="1" selected>Weekly</option>
+  {%- else %}
+  <option value="1">Weekly</option>
+  {%- endif %}
+  {%- if n==2 %}
+  <option value="2" selected>Bi-weekly (every two weeks)</option>
+  {%- else %}
+  <option value="2">Bi-weekly (every two weeks)</option>
+  {%- endif %}
+  {%- if n==4 %}
+  <option value="4" selected>Monthly (every four weeks)</option>
+  {%- else %}
+  <option value="4">Monthly (every four weeks)</option>
+  {%- endif %}
+</select>
+{%- endmacro %}
+
+{%- macro shipping_methods_select(methods,m) %}
+<select class="form-control" id="shipping_method" name="shipping_method">
+  {%- for method in methods %}
+  {%- if method.id==m.id %}
+  <option value="{{ method.id }}" selected>{{ method.name }} ({{ method.delivery_window }})</option>
+  {%- else %}
+  <option value="{{ method.id }}">{{ method.name }} ({{ method.delivery_window }})</option>
+  {%- endif %}
+  {%- endfor %}
+</select>
+{%- endmacro %}
+
+{%- macro default_subscription_type_select(types,t) %}
+<select class="form-control" id="default_subscription_type" name="default_subscription_type">
+  {%- for type in types %}
+  {%- if type.id==t.id %}
+  <option value="{{ type.id }}" selected>{{ type.name }}</option>
+  {%- else %}
+  <option value="{{ type.id }}">{{ type.name }}</option>
+  {%- endif %}
+  {%- endfor %}
+</select>
+{%- endmacro %}

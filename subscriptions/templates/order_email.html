@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <style>
+  .order .header th {
+    padding: 12px;
+    background-color: gray;
+    color: white;
+  }
+  .order .line th,td {
+    border-bottom: 1px solid gray;
+    padding: 12px;
+  }
+  table {
+    border-collapse: collapse;
+  }
+  td.left, th.left {
+    text-align: left;
+  }
+  td.right, th.right {
+    text-align: right;
+  }
+  </style>
+</head>
+<body style="font-family: Arial, Helvetica, sans-serif;">
+  <h1>INDIE PULL LIST</h1>
+  <h2>Thank you for your order!</h2>
+  <table class="order">
+    <tr class="header">
+      <th class="left" colspan="2">Order #{{ order.paypal_order_id }}</th>
+      <th class="right" colspan="2">{{ order.formatted_date() }}</th>
+    </tr>
+    <tr class="line">
+      <th class="left">Title</th>
+      <th class="right">Units</th>
+      <th class="right">Price</th>
+      <th class="right">Total</th>
+    </tr>
+    {% for item in order.items %}
+      <tr class="line">
+        <td class="left">{{ item.issue.title }}</td>
+        <td class="right">{{ item.units }}</td>
+        <td class="right">{{ item.unit_price }}</td>
+        <td class="right">{{ item.total_price }}</td>
+      </tr>
+    {% endfor %}
+    <tr class="line">
+      <td></td>
+      <td></td>
+      <th class="right">Subtotal</th>
+      <td class="right">{{ order.subtotal }}</td>
+    </tr>
+    <tr class="line">
+      <td></td>
+      <td></td>
+      <th class="right">Discount</th>
+      <td class="right">-{{ order.discount }}</td>
+    </tr>
+    <tr class="line">
+      <td></td>
+      <td></td>
+      <th class="right">Shipping</th>
+      <td class="right">{{ order.shipping }}</td>
+    </tr>
+    <tr class="line">
+      <td></td>
+      <td></td>
+      <th class="right">Total</th>
+      <td class="right">{{ order.total }}</td>
+    </tr>
+  </table>
+</body>
+</html>

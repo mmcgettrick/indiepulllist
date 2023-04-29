@@ -1,0 +1,40 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+{% import 'macros/mobile_nav.j2' as macros %}
+
+{{ macros.mobile_nav('Reviews', '#', url_for('blog'), current_user) }}
+
+<nav class="d-none d-md-block">
+  <ol class="breadcrumb bg-transparent mb-0 mt-2 pb-0">
+    <li class="breadcrumb-item"><a href="{{ url_for('index') }}">Home</a></li>
+    <li class="breadcrumb-item"><a href="{{ url_for('blog') }}">Reviews</a></li>
+    <li class="breadcrumb-item active">{{ blog_entry.title }}</li>
+  </ol>
+</nav>
+
+<div class="container main-container">
+  <div class="card my-4 mr-2">
+    <div class="card-body">
+      <h5 class="card-title">{{ blog_entry.title }}</h5>
+      <h6 class="card-subtitle text-muted">Posted by <span class="text-primary">{{ blog_entry.author }}</span> on {{ blog_entry.date.strftime("%A, %B %d, %Y") }} at {{ blog_entry.date.strftime("%H:%M:%S") }}</h6>
+      <p class="card-text pt-4">{{ blog_entry.text|safe }}</p>
+      {%- if blog_entry.store_link %}
+      <a class="btn btn-success" href="{{ url_for('store') }}{{ blog_entry.store_link}}">Buy It!</a>
+      {%- endif %}
+    </div>
+  </div>
+  {%- if previous %}
+  <a class="btn btn-primary" href="{{ url_for('blog') }}/{{ previous.id }}"><i class="fa fa-arrow-left"></i></a>
+  {%- else %}
+  <a class="btn btn-primary disabled" href="{{ url_for('blog') }}/{{ previous.id }}"><i class="fa fa-arrow-left"></i></a>
+  {%- endif %}
+  {%- if next %}
+  <a class="btn btn-primary" href="{{ url_for('blog') }}/{{ next.id }}"><i class="fa fa-arrow-right"></i></a>
+  {%- else %}
+  <a class="btn btn-primary disabled" href="{{ url_for('blog') }}/{{ next.id }}"><i class="fa fa-arrow-right"></i></a>
+  {%- endif %}
+</div>
+
+{% endblock %}

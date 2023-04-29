@@ -1,0 +1,16 @@
+INDIE PULL LIST
+
+Thank you for your order!
+
+Order #{{ order.paypal_order_id }}
+{{ order.formatted_date() }}
+
+Title Units Price Total
+
+{% for item in order.items %}
+{{ item.issue.title }}  {{ item.units }}  {{ item.unit_price }} {{ item.total_price }}  {% endfor %}
+
+Subtotal: {{ order.subtotal }}
+Discount: -{{ order.discount }}
+Shipping: {{ order.shipping }}
+Total:    {{ order.total }}

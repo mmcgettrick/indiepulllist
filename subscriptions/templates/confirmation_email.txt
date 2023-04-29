@@ -1,0 +1,5 @@
+INDIE PULL LIST
+
+Welcome! Thanks for registering. Please follow this link to confirm that {{ email }} is your email address:
+
+{{ confirm_url }}

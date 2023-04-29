@@ -1,0 +1,220 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<script src="https://www.paypal.com/sdk/js?client-id={{ config['PAYPAL_CLIENT_ID'] }}&currency=USD"></script>
+
+{% import 'macros/mobile_nav.j2' as macros %}
+
+{{ macros.mobile_nav('Shopping Cart', '#', url_for('store'), current_user) }}
+
+<div class="container">
+  <div class="h2 py-3 my-1 d-none d-md-block">{{ title }}</div>
+  {%- if shopping_cart|list|length == 0 %}
+  <div class="row p-3 m-1 bg-light">
+    <div class="col text-center">No items... yet!</div>
+  </div>
+  {%- else %}
+    {%- for item in shopping_cart %}
+    <form id="{{ item.issue_id }}" action="{{ url_for('update_shopping_cart') }}" method="POST">
+    {{ forms[item.issue_id].hidden_tag() }}
+
+    <div class="row pt-3 pb-1 m-1 border-bottom">
+      <div class="col">
+        <div class="row pl-2">
+          <div class="col-lg-7 col-11 p-0 m-0">
+            <img class="float-left pr-2" style="width: 80px;" src="https://d2fb3otj4xmuxd.cloudfront.net/{{ item.issue_id }}.jpg">
+            {{ item.inventory.title }}
+          </div>
+          <!-- large screens -->
+          <div class="col-lg-2 d-none d-lg-block">
+            <span class="pr-2">Units:</span>
+            <a onclick="decrementUnitsForIssue('{{ item.issue_id }}');" style="font-size: 0.75em; cursor: pointer;"><i class="fa fa-minus"></i></a>
+            {%- if inventory[item.issue_id] ==  item.units %}
+            <span class="px-2 text-danger">{{- item.units -}}</span>
+            <a style="font-size: 0.75em">
+              <i class="fa fa-plus" style="color: #CCCCCC"></i>
+            </a>
+            {%- else %}
+            <span class="px-2">{{- item.units -}}</span>
+            <a onclick="incrementUnitsForIssue('{{ item.issue_id }}');" style="font-size: 0.75em; cursor: pointer;">
+              <i class="fa fa-plus"></i>
+            </a>
+            {%- endif %}
+          </div>
+          <div class="col-lg-2 d-none d-lg-block">
+            <span class="">Price: ${{ item.inventory.web_formatted_sale_or_retail_price()|safe }}<span>
+          </div>
+          <div class="col-lg-1 col-1">
+            <span class="float-right" style="cursor: pointer" onclick="removeFromCart('{{ item.issue_id }}');">
+              <i class="fa fa-times-circle"></i>
+            </span>
+          </div>
+        </div>
+        <!-- small screens -->
+        <div class="row px-2 py-2 d-lg-none">
+          <div class="col p-0 m-0">
+            <span class="pr-2">Units:</span>
+            <a onclick="decrementUnitsForIssue('{{ item.issue_id }}');" style="font-size: 0.75em; cursor: pointer;"><i class="fa fa-minus"></i></a>
+            {%- if inventory[item.issue_id] ==  item.units %}
+            <span class="px-2 text-danger">{{- item.units -}}</span>
+            <a style="font-size: 0.75em">
+              <i class="fa fa-plus" style="color: #CCCCCC"></i>
+            </a>
+            {%- else %}
+            <span class="px-2">{{- item.units -}}</span>
+            <a onclick="incrementUnitsForIssue('{{ item.issue_id }}');" style="font-size: 0.75em; cursor: pointer;">
+              <i class="fa fa-plus"></i>
+            </a>
+            {%- endif %}
+          </div>
+          <div class="col p-0 m-0 text-right">Price: ${{ item.inventory.web_formatted_sale_or_retail_price()|safe }}</div>
+        </div>
+      </div>
+    </div>
+
+    </form>
+    {%- endfor %}
+    <div class="row py-3 m-1">
+      <div class="col-lg-6 p-0 m-0">
+        <div class="row py-3 m-1 bg-light">
+          <div class="col font-weight-bold">Shipping Method</div>
+        </div>
+        <form action="{{ url_for('update_shipping_method') }}" method="POST">
+        {{ shipping_method_form.hidden_tag() }}
+        <div class="row py-3 m-1 border-bottom">
+          <div class="col p-0">
+            <select class="form-control" id="shipping_method" name="shipping_method" onchange="updateShippingMethod(this);">
+              {%- for method in methods %}
+              {%- if method.id==shipping_method.id %}
+              <option value="{{ method.id }}" selected>{{ method.name }} ({{ method.delivery_window }})</option>
+              {%- else %}
+              <option value="{{ method.id }}">{{ method.name }} ({{ method.delivery_window }})</option>
+              {%- endif %}
+              {%- endfor %}
+            </select>
+          </div>
+        </div>
+        </form>
+        <div class="row py-3 m-1 bg-light">
+          <div class="col font-weight-bold">Coupon Code</div>
+        </div>
+        <form action="{{ url_for('apply_coupon_code') }}" method="POST" class="">
+        {{ coupon_code_form.hidden_tag() }}
+        <div class="row py-3 m-1 form-group border-bottom">
+          <div class="col-sm-10 col-9 pl-0 pr-2">
+            {{ coupon_code_form.coupon_code(class_="form-control mr-2", value=discount_code.code) }}
+          </div>
+          <div class="col-sm-2 col-3 p-0">
+            {{ coupon_code_form.submit(class_="btn btn-primary ml-auto") }}
+          </div>
+        </div>
+        </form>
+      </div>
+      <div class="col-lg-6 p-0 m-0">
+        <div class="row py-3 m-1 bg-light">
+          <div class="col font-weight-bold">Order Summary</div>
+        </div>
+        <div class="row py-3 m-1 border-bottom">
+          <div class="col-6 font-weight-bold text-lg-right">Subtotal</div>
+          <div class="col-6 text-right">${{ subtotal }}</div>
+        </div>
+        <div class="row py-3 m-1 border-bottom">
+          <div class="col-6 font-weight-bold text-lg-right">Discount</div>
+          <div class="col-6 text-right">
+            {% if discount_code.percentage > 0.00 %}
+            <span class="text-muted mr-2">({{ discount_code.name }})</span>
+            <span class="text-danger">-${{ discount }}</span>
+            {% else %}
+            <span class="">${{ discount }}</span>
+            {% endif %}
+          </div>
+        </div>
+        <div class="row py-3 m-1 border-bottom">
+          <div class="col-6 font-weight-bold text-lg-right">Shipping</div>
+          <div class="col-6 text-right">
+          {% if discount_code.free_shipping == True %}
+          <span class="text-muted mr-2">({{ discount_code.name }})</span>
+          <span class="text-right">${{ shipping }}</span>
+          {% else %}
+          <span class="text-right">${{ shipping }}</span>
+          {% endif %}
+          </div>
+        </div>
+        <div class="row py-3 m-1 border-bottom">
+          <div class="col-6 font-weight-bold text-lg-right">Total</div>
+          <div class="col-6 text-right">${{ total }}</div>
+        </div>
+        <div class="row pt-2 m-0">
+          <div id="paypal-button-container" class="col"></div>
+            <script>
+              paypal.Buttons({
+                style: {
+                  shape: 'rect',
+                  color: 'gold',
+                  layout: 'vertical',
+                  label: 'checkout',
+
+                },
+                createOrder: function(data, actions) {
+                  return actions.order.create({
+                    purchase_units: [{
+                      amount: {
+                        currency_code: "USD",
+                        value: "{{ total }}",
+                        breakdown: {
+                          item_total: {
+                            currency_code: "USD",
+                            value: "{{ subtotal - discount }}"
+                          },
+                          shipping: {
+                            currency_code: "USD",
+                            value: "{{ shipping }}"
+                          }
+                        }
+                      },
+                      items: [
+                      {%- for item in shopping_cart -%}
+                      {
+                        name: "{{ item.inventory.title }}",
+                        sku: "{{ item.issue_id }}",
+                        unit_amount: {
+                          currency_code: "USD",
+                          value: "{{ item.inventory.discounted_price(discount_code.percentage) }}"
+                        },
+                        quantity: "{{ item.units }}"
+                      }
+                      {%- if loop.index < loop.length -%},{%- endif -%}
+                      {%- endfor -%}
+                      ]
+                    }]
+                  });
+                },
+                onApprove: function(data, actions) {
+                  return actions.order.capture().then(function(details) {
+                    return fetch('{{ url_for("complete_transaction") }}', {
+                      method: 'post',
+                      headers: {
+                        'content-type': 'application/json'
+                      },
+                      body: JSON.stringify({
+                        orderID: data.orderID
+                      })
+                    }).then(function() {
+                      window.location.href = '{{ url_for("orders") }}/' +  data.orderID
+                    });
+                  });
+                },
+                onError: function (err) {
+                  alert('An error occurred: ' + err);
+                }
+              }).render('#paypal-button-container');
+            </script>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+</div>
+
+{% endblock %}

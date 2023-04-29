@@ -1,0 +1,75 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+{% include "includes/mobile_main_nav.html" %}
+
+<div class="jumbotron jumbotron-fluid" style="background-image: url('{{ url_for('static',filename='img/SplashMedium.jpg') }}'); background-position: center; background-size: cover; height: 500px">
+  <div class="row text-center h-100">
+    <div class="col my-auto">
+      <a class="btn btn-dark btn-lg" href="{{ url_for('store') }}" role="button">Buy Comics Now!</a>
+    </div>
+  </div>
+</div>
+
+<div class="container p-0">
+
+  <div class="row mb-4">
+    <div class="col-md-6 order-md-2">
+      <div class="h2 p-2">About Us</div>
+      <p class="px-2">
+        We created Indie Pull List for lovers of creator-owned and small-press comic books. You’ll find no “big 2” comic books here! This is the place to find out about fresh stories told from diverse perspectives, delivered direct to you in the classic “single
+ issue” comic book format. There is something special about consuming these stories as single issues! You can lay them flat and see the artwork the way it was intended. The stories are long enough to hold your attention and capture your imagination - but short
+ enough to read in a single sitting.
+      </p>
+      <p class="px-2">
+        We especially cater to the collector that wants their single issue comics “minty fresh”… in other words: in amazing condition and delivered right now!!! (Our previous experiences with online retailers often resulted in receiving damaged comics in the mail and often weeks after their publication date.)
+      </p>
+      <p class="px-2">
+        We only ship out comic books in VF/NM condition. If you find the condition of any comic books you receive from us to not match this guarantee, simply return the issue for a full refund.
+      </p>
+    </div>
+    <div class="col-md-6 order-md-1">
+      <div id="carousel" class="carousel slide" data-ride="carousel">
+        <div class="carousel-inner">
+          <div class="carousel-item active">
+            <img src="{{ url_for('static',filename='img/Carousel1.jpg') }}" class="d-block w-100">
+          </div>
+          <div class="carousel-item">
+            <img src="{{ url_for('static',filename='img/Carousel2.jpg') }}" class="d-block w-100">
+          </div>
+          <div class="carousel-item">
+            <img src="{{ url_for('static',filename='img/Carousel3.jpg') }}" class="d-block w-100">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mb-4">
+    <div class="col-md-6 order-md-2">
+      <div class="h2 p-2">Packaging</div>
+      <p class="px-2">
+        All comics are bagged and boarded using BCW acid-free backing boards and polypropylene bags. You can also upgrade to Mylar archival grade bags!
+      </p>
+    </div>
+    <div class="col-md-6 order-md-1">
+      <img class="img-fluid" src="{{ url_for('static',filename='img/PackagingMedium.jpg') }}">
+    </div>
+  </div>
+
+  <div class="row mb-4">
+    <div class="col-md-6 order-md-2">
+      <div class="h2 p-2">Shipping</div>
+      <p class="px-2">
+        We ship USPS and offer First Class and Priority Mail options. Choose the right shipping method for you based on your personal FOMO tolerance (Fear of missing out). All orders ship out reinforced with cardboard to keep your comic books safe in transit.
+      </p>
+    </div>
+    <div class="col-md-6 order-md-1">
+      <img class="img-fluid" src="{{ url_for('static',filename='img/ShippingMedium.jpg') }}">
+    </div>
+  </div>
+
+</div>
+
+{% endblock %}

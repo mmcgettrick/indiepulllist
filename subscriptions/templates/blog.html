@@ -1,0 +1,29 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+{% import 'macros/mobile_nav.j2' as macros %}
+
+{{ macros.mobile_nav('Home', '#', url_for('index'), current_user) }}
+
+<div class="container main-container">
+  <div class="h2 py-3 my-1 d-none d-md-block">{{ title }}</div>
+  {%- if blog_entries|list|length == 0 %}
+  <div class="row py-3 my-1 bg-light">
+    <div class="col text-center">No blog entries found!</div>
+  </div>
+  {%- else %}
+    {%- for entry in blog_entries %}
+      <div class="card my-4 mr-2">
+        <div class="card-body">
+          <h5 class="card-title"><a href="{{ url_for('blog') }}/{{ entry.id }}" class="card-link text-reset stretched-link">{{ entry.title }}</a></h5>
+          <h6 class="card-subtitle text-muted">Posted by <span class="text-primary">{{ entry.author }}</span> on {{ entry.date.strftime("%A, %B %d, %Y") }} at {{ entry.date.strftime("%H:%M:%S") }}</h6>
+          <p class="card-text pt-4">{{ entry.text|safe }}</p>
+        </div>
+      </div>
+    {%- endfor %}
+  {%- endif %}
+</div>
+
+
+{% endblock %}

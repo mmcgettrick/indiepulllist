@@ -1,0 +1,48 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+{% import 'macros/mobile_nav.j2' as macros %}
+
+{{ macros.mobile_nav('Series', '#', url_for('subscriptions'), current_user) }}
+
+<div class="container-fluid main-container">
+  <div class="h2 py-3 my-1 d-none d-md-block">{{ title }}</div>
+  <form action="" method="GET">
+  <div class="row py-2 pl-2">
+    <div class="col-lg-6 col-md-8 col-7 pl-2 pr-1">{{ form.search(class_="form-control") }}</div>
+    <div class="col-lg-6 col-md-4 col-5 p-0">
+      <button type="submit" class="btn btn-primary"><span class="fa fa-search" title="Submit"></span></button>
+      <a class="btn btn-primary" href="{{ url_for('store') }}">
+        <span class="">Clear</span>
+      </a>
+    </div>
+  </div>
+  <div class="row py-2 px-2">
+    <div class="col-xl-2 col-lg-3 col-md-4 col-sm-5 col-9 px-2">
+      {{ form.publishers(onchange="this.form.submit()", class_="form-control") }}
+    </div>
+  </div>
+  </form>
+  {% if series|list|length == 0 %}
+  <div class="row py-3 my-1 bg-light">
+    <div class="col text-center">No series found.</div>
+  </div>
+  {% else %}
+  <div class="row px-2">
+    {% for s in series %}
+      <div class="card product-card p-2 mx-2 mb-2">
+        <img src="https://d2fb3otj4xmuxd.cloudfront.net/{{ s.item_code }}.jpg" class="card-img-top" onerror="this.src='https://ipl-subscriptions-artwork.s3.amazonaws.com/ImageComingSoon.png';">
+        <div class="card-body pb-0">
+          <p class="card-text text-center small">
+            <a href="{{ url_for('series') }}/{{ s.id }}" class="card-link text-reset stretched-link">{{ s.name }}</a>
+          </p>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+</div>
+
+
+{% endblock %}

@@ -1,0 +1,55 @@
+<header>
+  <nav class="navbar navbar-expand-lg navbar-light bg-light d-md-none">
+    <a class="navbar-brand" href="{{ url_for('index') }}">IndiePullList</a>
+    <div class="d-flex order-lg-1 ml-auto">
+      <a href="{{ url_for('shopping_cart') }}" class="navbar-text px-2">
+        <span class="">
+          <i class="fa fa-shopping-cart"></i>
+          {% if 'items_in_cart' in session and session['items_in_cart'] > 0 %}
+          <i class="badge badge-pill badge-secondary small" style="position: relative; top: -10px; left: -2px; font-style: normal;">{{ session['items_in_cart'] }}</i>
+          {% endif %}
+        </span>
+      </a>
+    </div>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNavDropdown">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item active">
+          <a class="nav-link" href="{{ url_for('index') }}">Home</a>
+        </li>
+        <li class="nav-item active">
+          <a class="nav-link" href="{{ url_for('store') }}">Comics</a>
+        </li>
+      </ul>
+    </div>
+    <div class="collapse navbar-collapse" id="navbarNavDropdown">
+      <ul class="navbar-nav ml-auto">
+        {%- if current_user.is_authenticated %}
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="userActionsDropdown" role="button" data-toggle="dropdown">
+            <i class="fa fa-fw fa-user"></i>
+          </a>
+          <div class="dropdown-menu dropdown-menu-right">
+            {% if 0==1 %}
+            <a class="dropdown-item" href="{{ url_for('profile') }}">Profile</a>
+            {% endif %}
+            <a class="dropdown-item" href="{{ url_for('change_password') }}">Change Password</a>
+            <a class="dropdown-item" href="{{ url_for('orders') }}">Orders</a>
+            <div class="dropdown-divider"></div>
+            <a class="dropdown-item" href="{{ url_for('logout') }}">Logout</a>
+          </div>
+        </li>
+        {%- else %}
+        <li class="nav-item mx-lg-0">
+          <a class="nav-link active" href="{{ url_for('login') }}">Login</a>
+        </li>
+        <li class="nav-item mx-lg-0">
+          <a class="nav-link active" href="{{ url_for('register') }}">Register</a>
+        </li>
+        {% endif %}
+      </ul>
+    </div>
+  </nav>
+</header>

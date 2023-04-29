@@ -1,0 +1,140 @@
+{% extends "layout.html" %}
+
+{%- block content %}
+
+<form action="" method="POST">
+{{ form.hidden_tag() }}
+<div class="container-fluid mx-2 px-4">
+  <div class="h1 p-3 m-1">{{ title }}</div>
+  <div class="row p-3 m-1 bg-light">
+    <div class="col-1 col-form-label font-weight-bold">{{ form.search.label() }}</div>
+    <div class="col-3">{{ form.search(class_="form-control") }}</div>
+    <div class="col-2 px-2">
+      {{ form.publishers(onchange="this.form.submit()", class_="form-control") }}
+    </div>
+    <div class="col-1 pl-0 pr-2 mr-2">
+      {{ form.release_date(onchange="this.form.submit()", class_="form-control") }}
+    </div>
+    <div class="col-2 pr-2 mr-2 py-2">
+      <div class="form-check">
+      {{ form.only_show_visible(onchange="this.form.submit()", class_="form-check-input") }}
+      {{ form.only_show_visible.label(class_="form-check-label") }}
+      </div>
+    </div>
+    <div class="col float-left">
+      <button type="submit" class="btn btn-primary"><span class="fa fa-save" title="Submit"></span></button>
+      <a class="btn btn-primary" href="{{ url_for('inventory') }}">
+        <span class="">Clear</span>
+      </a>
+      <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addInventory"><i class="fa fa-plus"></i></button>
+    </div>
+  </div>
+  {% if inventory|list|length == 0 %}
+  <div class="row p-3 m-1 bg-light">
+    <div class="col text-center">No inventory... yet!</div>
+  </div>
+  {% else %}
+    <div class="row py-3 my-1 bg-light">
+      <div class="col-1"></div>
+      <div class="col-11">
+        <div class="row p-0 m-0">
+          <div class="col p-2 font-weight-bold">Item Code</div>
+          <div class="col p-2 ml-2 font-weight-bold">Units</div>
+          <div class="col p-2 font-weight-bold">Release Date</div>
+          <div class="col p-2 font-weight-bold">eBay Item ID</div>
+          <div class="col p-2 font-weight-bold">Sale</div>
+          <div class="col p-2 font-weight-bold">Hidden</div>
+        </div>
+      </div>
+    </div>
+    {% for item in form.inventory %}
+      <div class="row py-3 my-1 bg-light">
+        <div class="col-1">
+          <img class="img-fluid" src="https://d2fb3otj4xmuxd.cloudfront.net/{{ item.issue_id.data }}.jpg">
+        </div>
+        <div class="col-11">
+          <div class="row p-0 m-0">
+            <div class="col p-2 font-weight-bold">
+              {{ item.title(class_="form-control d-none") }}
+              {{ item.title.data }}
+            </div>
+          </div>
+          <div class="row p-0 m-0">
+            <div class="col p-2">
+              {{ item.issue_id(class_="form-control d-none") }}
+              {{ item.issue_id.data }}
+            </div>
+            <div class="col">{{ item.units(class_="form-control") }}</div>
+            <div class="col">{{ item.release_date(class_="form-control") }}</div>
+            <div class="col">{{ item.ebay_item_id.data }}</div>
+            <div class="col">{{ item.sale(class_="form-control") }}</div>
+            <div class="col text-center">{{ item.hidden(class_="form-control") }}</div>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  {% endif %}
+</div>
+</form>
+
+<!-- Modal -->
+<div class="modal fade" id="addInventory" tabindex="-1" role="dialog" aria-labelledby="addInventory" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <form action="add_to_inventory" method="POST">
+      {{ add_form.hidden_tag() }}
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Add To Inventory</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="row py-2">
+          <div class="col">
+            {{ add_form.issue_id.label(class_="") }} {{ add_form.issue_id(class_="form-control") }}
+          </div>
+        </div>
+        <div class="row py-2">
+          <div class="col">
+            {{ add_form.title.label(class_="") }} {{ add_form.title(class_="form-control") }}
+          </div>
+        </div>
+        <div class="row py-2">
+          <div class="col">
+            {{ add_form.publisher.label(class_="") }} {{ add_form.publisher(class_="form-control") }}
+          </div>
+        </div>
+        <div class="row py-2">
+          <div class="col">
+            {{ add_form.units.label(class_="") }} {{ add_form.units(class_="form-control") }}
+          </div>
+        </div>
+        <div class="row py-2">
+          <div class="col">
+            {{ add_form.retail_price.label(class_="") }} {{ add_form.retail_price(class_="form-control") }}
+          </div>
+        </div>
+        <div class="row py-2">
+          <div class="col">
+            {{ add_form.release_date.label(class_="") }} {{ add_form.release_date(class_="form-control") }}
+          </div>
+        </div>
+        <div class="row py-2">
+          <div class="col">
+            <div class="form-check">
+            {{ add_form.hidden(class_="form-check-input") }} {{ add_form.hidden.label(class_="form-check-label") }}
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        {{ add_form.submit(class_="btn btn-primary") }}
+      </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

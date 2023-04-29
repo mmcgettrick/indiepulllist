@@ -1,0 +1,33 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+{% import 'macros/mobile_nav.j2' as macros %}
+
+{{ macros.mobile_nav('FCBD2021', '#', url_for('index'), current_user) }}
+
+<div class="container-fluid main-container">
+  <div class="h2 py-1 my-1">Order Submitted!</div>
+  <div class="h6 py-3 my-1">
+    <p>
+      We will send an invoice to <b>{{ order.paypal_email }}</b> via PayPal when your order is ready to ship.<br>
+      {% if order.bagboard == "on" %}
+      Your order will be bagged and boarded at a cost of $0.50 per title.<br>
+      {% endif %}
+    </p>
+    <div class="row px-2">
+      <div class="col">
+        <div class="row">
+          {% for i in issues %}
+            <div class="col-lg-7 col-11 p-1 m-1">
+              <img class="float-left pr-2" style="width: 120px;" src="https://d2fb3otj4xmuxd.cloudfront.net/{{ i[0] }}.jpg">
+              <div>{{ i[1]|safe }}</div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

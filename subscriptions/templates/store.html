@@ -1,0 +1,111 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<div class="container-fluid main-container">
+  <div class="h2 py-3 my-1 d-none d-md-block">{{ title }}</div>
+  {% if inventory|list|length == 0 %}
+  <div class="row py-3 my-1 bg-light">
+    <div class="col text-center">No inventory... yet!</div>
+  </div>
+  {% else %}
+  {% set first_tab = inventory.keys()|first %}
+  <form action="" method="POST">
+  {{ search_form.hidden_tag() }}
+  <div class="row py-2">
+    <div class="col-lg-6 col-md-8 col pr-1">{{ search_form.search(class_="form-control") }}</div>
+    <div class="col-2 p-0 m-0">
+      <button type=submit class="btn btn-primary"><span class="fa fa-search" title="Submit"></span></button>
+    </div>
+  </div>
+  </form>
+
+  <div class="row">
+
+    <!-- start: filters for large screens -->
+    <div class="col-lg-3 d-none d-lg-block">
+      <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+        <div class="h4">Release Week</div>
+        {%- for date,issues in inventory.items() %}
+        {%- if first_tab == date %}
+        <a class="nav-link text-dark active" id="v-pills-{{ date }}-tab" data-toggle="pill" href="#v-pills-{{ date }}" role="tab" aria-controls="v-pills-{{ date }}" aria-selected="true">{{ date }}</a>
+        {%- else %}
+        <a class="nav-link text-dark" id="v-pills-{{ date }}-tab" data-toggle="pill" href="#v-pills-{{ date }}" role="tab" aria-controls="v-pills-{{ date }}" aria-selected="false">{{ date }}</a>
+        {%- endif %}
+        {%- endfor %}
+        <a class="nav-link text-dark" id="v-pills-back-issues-tab" data-toggle="pill" href="#v-pills-back-issues" role="tab" aria-controls="v-pills-back-issues" aria-selected="false">Back Issues</a>
+      </div>
+      <div class="h4 mt-4 mb-0">Refine Your Search</div>
+      <form action="" method="POST">
+      {{ filter_form.hidden_tag() }}
+      <div class="ml-2 text-smaller">
+        {{ filter_form.publishers.label(class="mt-2 h5") }}
+        {{ filter_form.publishers(class_="list-unstyled small") }}
+      </div>
+      {{ filter_form.submit(class_="btn btn-primary") }}
+      </form>
+    </div>
+    <!-- end: filters for large screens-->
+
+    <!-- start: filters for small screens -->
+    <nav class="navbar navbar-expand-lg navbar-light d-lg-none">
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#foo" aria-controls="foo" aria-expanded="false" aria-label="Toggle filters">
+        <span>Filters <i class="fa fa-filter"></i></span>
+      </button>
+      <div class="collapse navbar-collapse" id="foo">
+        {%- for date,issues in inventory.items() %}
+        {%- if first_tab == date %}
+        <a class="nav-link text-dark active" id="v-pills-{{ date }}-tab" data-toggle="pill" href="#v-pills-{{ date }}" role="tab" aria-controls="v-pills-{{ date }}" aria-selected="true">{{ date }}</a>
+        {%- else %}
+        <a class="nav-link text-dark" id="v-pills-{{ date }}-tab" data-toggle="pill" href="#v-pills-{{ date }}" role="tab" aria-controls="v-pills-{{ date }}" aria-selected="false">{{ date }}</a>
+        {%- endif %}
+        {%- endfor %}
+        <a class="nav-link text-dark" id="v-pills-back-issues-tab" data-toggle="pill" href="#v-pills-back-issues" role="tab" aria-controls="v-pills-back-issues" aria-selected="false">Back Issues</a>
+      </div>
+    </nav>
+    <!-- end: filters for small screens -->
+
+    <div class="col-lg-9">
+      <div class="tab-content" id="v-pills-tabContent">
+        {% for date,issues in inventory.items() %}
+        {% if first_tab == date %}
+        <div class="tab-pane fade show active" id="v-pills-{{ date }}" role="tabpanel aria-labelledby="v-pills-{{ date }}-tab">
+        {% else %}
+        <div class="tab-pane fade" id="v-pills-{{ date }}" role="tabpanel aria-labelledby="v-pills-{{ date }}-tab">
+        {% endif %}
+          <div class="row">
+          {% for i in issues %}
+            <div class="card p-2 mx-2 mb-2 product-card">
+              <img src="https://d2fb3otj4xmuxd.cloudfront.net/{{ i.issue.item_code }}.jpg" class="card-img-top">
+              <div class="card-body pb-0">
+                <div class="card-title text-center small">{{ i.issue.web_formatted_title()|safe }}</div>
+                <p class="card-text text-center small">
+                  <a href="{{ url_for('store') }}/{{ i.issue_id }}" class="card-link text-reset stretched-link">{{ i.issue.web_formatted_price(discount=discount.percentage)|safe }}</a>
+                </p>
+              </div>
+            </div>
+          {% endfor %}
+          </div>
+        </div>
+        {% endfor %}
+        <div class="tab-pane fade" id="v-pills-back-issues" role="tabpanel" aria-labelledby="v-pills-back-issues-tab">
+          <div class="row">
+            {% for i in back_issues %}
+            <div class="card p-2 mx-2 mb-2" style="width: 180px;">
+              <img src="https://ipl-artwork-180px.s3.amazonaws.com/{{ i.issue.item_code }}.jpg" class="card-img-top">
+              <div class="card-body pb-0">
+                <div class="card-title text-center small">{{ i.issue.web_formatted_title()|safe }}</div>
+                <p class="card-text text-center small">
+                  <a href="{{ url_for('store') }}/{{ i.issue_id }}" class="card-link text-reset stretched-link">{{ i.issue.web_formatted_price(discount=discount.percentage)|safe }}</a>
+                </p>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

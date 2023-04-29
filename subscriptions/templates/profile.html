@@ -1,0 +1,41 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container">
+
+{% import 'macros/profile.j2' as macros %}
+
+<form method="POST" action="">
+{{ form.hidden_tag() }}
+<div class="row">
+  <div class="col-9 bg-light mt-4">
+    <div class="row">
+      <div class="col h2 my-4">User Profile</div>
+    </div>
+    <div class="form-group row">
+      <label for="email" class="col-4 col-form-label font-weight-bold">Email</label>
+      <div class="col">
+        <input type="email" class="form-control" id="email" value="{{ profile.user.email }}" disabled></input>
+      </div>
+    </div>
+    <div class="form-group row">
+      <label for="shipping_frequency" class="col-4 col-form-label font-weight-bold">Shipping Frequency</label>
+      <div class="col">{{ macros.shipping_frequency_select(profile.shipping_frequency) }}</div>
+    </div>
+    <div class="form-group row">
+      <label for="shipping_method" class="col-4 col-form-label font-weight-bold">Shipping Method</label>
+      <div class="col">{{ macros.shipping_methods_select(methods, profile.shipping_method) }}</div>
+    </div>
+    <div class="form-group row">
+      <label for="default_subscription_type" class="col-4 col-form-label font-weight-bold">Default Subscription Type</label>
+      <div class="col">{{ macros.default_subscription_type_select(types, profile.default_subscription_type) }}</div>
+    </div>
+    <div class="form-group row">
+      <div class="col">{{ form.submit(class_="btn btn-primary float-right") }}</div>
+    </div>
+  </div>
+</div>
+</form>
+
+</div>
+{% endblock %}

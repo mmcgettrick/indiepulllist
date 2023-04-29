@@ -1,0 +1,48 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+{% import 'macros/mobile_nav.j2' as macros %}
+
+{{ macros.mobile_nav(title, '#', back, current_user) }}
+
+<div class="container-fluid main-container">
+  <div class="h2 py-3 my-1 d-none d-md-block">{{ title }}</div>
+
+  {% if subscriptions|list|length == 0 %}
+  <div class="row py-3 my-1 bg-light">
+    <div class="col text-center">No subscriptions... yet!</div>
+  </div>
+  {% else %}
+  <div class="row px-2">
+    {% for s in subscriptions %}
+      <div class="card product-card p-2 mx-2 mb-2">
+        <div>
+          <i class="fa fa-close float-right pb-2" onclick="unsubscribe({{ s.series_id }},'{{ s.series.name }}')"></i>
+        </div>
+        <a href="{{ url_for('series') }}/{{ s.series_id }}">
+          <img src="https://d2fb3otj4xmuxd.cloudfront.net/{{ s.series.item_code }}.jpg" class="card-img-top" onerror="this.src='https://ipl-subscriptions-artwork.s3.amazonaws.com/ImageComingSoon.png';">
+        </a>
+        <div class="card-body pb-0">
+          <div class="card-title text-center small">
+            <a href="{{ url_for('series') }}/{{ s.series_id }}" class="card-link text-reset">{{ s.series.name }}</a>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+    <div class="card product-card p-2 mx-2 mb-2">
+      <div>
+        <i class="fa fa-close float-right pb-2 text-white" onclick=""></i>
+      </div>
+      <img src="https://d2fb3otj4xmuxd.cloudfront.net/None.jpg" class="card-img-top" onerror="this.src='https://ipl-subscriptions-artwork.s3.amazonaws.com/Plus.png';">
+      <div class="card-body pb-0">
+        <div class="card-title text-center small">
+          <a href="{{ url_for('series') }}" class="card-link text-reset stretched-link">Add Subscription!</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+</div>
+
+{% endblock %}

@@ -1,0 +1,88 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+{% import 'macros/mobile_nav.j2' as macros %}
+
+{{ macros.mobile_nav('Comics', '#', url_for('index'), current_user) }}
+
+<div class="container-fluid main-container">
+  <div class="h2 py-3 my-1 d-none d-md-block">{{ title }}</div>
+  <form action="" method="GET">
+  <div class="row py-2 pl-2">
+    <div class="col-lg-6 col-md-8 col-7 pl-2 pr-1">{{ search_form.search(class_="form-control") }}</div>
+    <div class="col-lg-6 col-md-4 col-5 p-0">
+      <button type="submit" class="btn btn-primary"><span class="fa fa-search" title="Submit"></span></button>
+      <a class="btn btn-primary" href="{{ url_for('store') }}">
+        <span class="">Clear</span>
+      </a>
+    </div>
+  </div>
+  <div class="row py-2 px-2">
+    <div class="col-xl-2 col-lg-3 col-md-4 col-sm-5 col-5 px-2">
+      {{ search_form.publishers(onchange="this.form.submit()", class_="form-control") }}
+    </div>
+    <div class="col-xl-2 col-lg-3 col-md-4 col-sm-4 col-6 pl-0 pr-2 mr-2">
+      {{ search_form.sort_by(onchange="this.form.submit()", class_="form-control") }}
+    </div>
+    <div class="col px-2">
+      <div class="form-check mt-2">
+      {{ search_form.on_sale(onchange="this.form.submit()", class_="form-check-input") }}
+      {{ search_form.on_sale.label(class_="form-check-label") }}
+      </div>
+    </div>
+  </div>
+  </form>
+  {% if inventory|list|length == 0 %}
+  <div class="row py-3 my-1 bg-light">
+    <div class="col text-center">No inventory... yet!</div>
+  </div>
+  {% else %}
+  <div class="row px-2">
+    <div class="col">
+      {% for group in grouped_inventory %}
+      <div class="row my-2 border-bottom">
+        <div class="col h2">{{ group }}</div>
+      </div>
+      {% if grouped_inventory[group] is mapping %}
+        {% for subgroup in grouped_inventory[group] %}
+        <div class="row my-2">
+          <div class="col"><span class="h4">{{ subgroup }}</span></div>
+        </div>
+        <div class="row">
+        {% for i in grouped_inventory[group][subgroup] %}
+          <div class="card product-card p-2 mx-2 mb-2">
+            <img src="https://d2fb3otj4xmuxd.cloudfront.net/{{ i.issue_id }}.jpg" class="card-img-top">
+            <div class="card-body pb-0">
+              <div class="card-title text-center small">{{ i.web_formatted_title()|safe }}</div>
+              <p class="card-text text-center small">
+                <a href="{{ url_for('store') }}/{{ i.issue_id }}" class="card-link text-reset stretched-link">${{ i.web_formatted_sale_or_retail_price()|safe }}</a>
+              </p>
+            </div>
+          </div>
+        {% endfor %}
+        </div>
+        {% endfor %}
+      {% else %}
+        <div class="row">
+        {% for i in grouped_inventory[group] %}
+          <div class="card product-card p-2 mx-2 mb-2">
+            <img src="https://d2fb3otj4xmuxd.cloudfront.net/{{ i.issue_id }}.jpg" class="card-img-top">
+            <div class="card-body pb-0">
+              <div class="card-title text-center small">{{ i.web_formatted_title()|safe }}</div>
+              <p class="card-text text-center small">
+                <a href="{{ url_for('store') }}/{{ i.issue_id }}" class="card-link text-reset stretched-link">${{ i.web_formatted_sale_or_retail_price()|safe }}</a>
+              </p>
+            </div>
+          </div>
+        {% endfor %}
+        </div>
+      {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+</div>
+<script src="https://www.paypal.com/sdk/js?client-id={{ config['PAYPAL_CLIENT_ID'] }}&currency=USD" async></script>
+
+{% endblock %}

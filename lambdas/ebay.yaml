@@ -1,0 +1,8 @@
+name: ebay_api_config
+
+api.ebay.com:
+  compatibility: 1119
+  appid: <appid goes here>
+  certid: <certid goes here>
+  devid: <devid goes here>
+  token: <token goes here>

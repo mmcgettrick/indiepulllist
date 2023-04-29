@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+{% import 'macros/subscriptions.j2' as macros %}
+
+<div class="row">
+  <div class="col">
+    <form action="" method="POST">
+      {{ form.hidden_tag() }}
+      {% for i,o in issues.items() %}
+        {{ macros.render_issue(i, o) }}
+      {% endfor %}
+      {{ form.submit(class_="btn btn-primary") }}
+    </form>
+  </div>
+</div>
+{% endblock %}

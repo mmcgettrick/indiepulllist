@@ -1,0 +1,164 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<script src="https://www.paypal.com/sdk/js?client-id={{ config['SANDBOX_PAYPAL_CLIENT_ID'] }}&currency=USD"></script>
+
+<div class="container">
+  <div class="h1 p-3 m-1">{{ title }}</div>
+  <div class="row p-3 m-1 bg-light">
+    <div class="col-lg-7 font-weight-bold">Item</div>
+    <div class="col-lg-2 d-none d-lg-block font-weight-bold text-lg-right">Price</div>
+    <div class="col-lg-1 d-none d-lg-block font-weight-bold text-lg-right">Quantity</div>
+    <div class="col-lg-1 d-none d-lg-block font-weight-bold text-lg-right">Total</div>
+    <div class="col-lg-1 d-none d-lg-block font-weight-bold text-lg-right"></div>
+  </div>
+  {%- if shopping_cart|list|length == 0 %}
+  <div class="row p-3 m-1 bg-light">
+    <div class="col text-center">No items... yet!</div>
+  </div>
+  {%- else %}
+    {%- for item in shopping_cart %}
+    <form id="{{ item.issue_id }}" action="{{ url_for('update_shopping_cart') }}" method="POST">
+    {{ forms[item.issue_id].hidden_tag() }}
+    <div class="row form-inline p-3 m-1 border-bottom">
+      <div class="col-lg-7 d-none d-lg-block">{{ item.issue.title }}</div>
+      <div class="col-lg-2 d-none d-lg-block text-lg-right">{{ item.issue.web_formatted_price(discount=discount.percentage)|safe }}</div>
+      <div class="col-lg-1 d-none d-lg-block form-group text-lg-right">
+        <a onclick="decrementUnitsForIssue('{{ item.issue_id }}');" style="font-size: 0.75em; cursor: pointer;"><i class="fa fa-minus"></i></a>
+        {%- if inventory[item.issue_id] ==  item.units %}
+        <span class="px-2 text-danger">{{- item.units -}}</span>
+        <a style="font-size: 0.75em">
+          <i class="fa fa-plus" style="color: #CCCCCC"></i>
+        </a>
+        {%- else %}
+        <span class="px-2">{{- item.units -}}</span>
+        <a onclick="incrementUnitsForIssue('{{ item.issue_id }}');" style="font-size: 0.75em; cursor: pointer;">
+          <i class="fa fa-plus"></i>
+        </a>
+        {%- endif %}
+      </div>
+      <div class="col-lg-1 d-none d-lg-block text-lg-right">{{ item.web_formatted_total(discount=discount.percentage) }}</div>
+      <div class="col-lg-1 d-none d-lg-block text-lg-right">
+        <span style="cursor: pointer" onclick="removeFromCart('{{ item.issue_id }}');">
+          <i class="fa fa-trash"></i>
+        </span>
+      </div>
+      <!-- Only for < lg screens -->
+      <div class="col d-lg-none text-lg-right">
+        {{ item.issue.title }}
+        <span class="float-right" style="cursor: pointer" onclick="removeFromCart('{{ item.issue_id }}');">
+          <i class="fa fa-trash"></i>
+        </span>
+        <br>
+        Price: {{ item.issue.web_formatted_price(discount=discount.percentage)|safe }}<br>
+        Units:&nbsp;<a onclick="decrementUnitsForIssue('{{ item.issue_id }}');" style="font-size: 0.75em; cursor: pointer;"><i class="fa fa-minus"></i></a>
+        {%- if inventory[item.issue_id] ==  item.units %}
+        <span class="px-2 text-danger">{{- item.units -}}</span>
+        <a style="font-size: 0.75em">
+          <i class="fa fa-plus" style="color: #CCCCCC"></i>
+        </a>
+        {%- else %}
+        <span class="px-2">{{- item.units -}}</span>
+        <a onclick="incrementUnitsForIssue('{{ item.issue_id }}');" style="font-size: 0.75em; cursor: pointer;">
+          <i class="fa fa-plus"></i>
+        </a>
+        {%- endif %}
+        <br>
+        Total: {{ item.web_formatted_total(discount=discount.percentage) }}<br>
+      </div>
+      <!-- end small screen section -->
+    </div>
+    </form>
+    {%- endfor %}
+    <div class="row py-3 m-1">
+      <div class="col-lg-6 p-0 m-0">
+        <div class="row py-3 m-1 bg-light">
+          <div class="col font-weight-bold">Shipping Method</div>
+        </div>
+        <form action="{{ url_for('update_shipping_method') }}" method="POST">
+        {{ shipping_method_form.hidden_tag() }}
+        <div class="row py-3 m-1 border-bottom">
+          <div class="col">
+            <select class="form-control" id="shipping_method" name="shipping_method" onchange="updateShippingMethod(this);">
+              {%- for method in methods %}
+              {%- if method.id==shipping_method.id %}
+              <option value="{{ method.id }}" selected>{{ method.name }} ({{ method.delivery_window }})</option>
+              {%- else %}
+              <option value="{{ method.id }}">{{ method.name }} ({{ method.delivery_window }})</option>
+              {%- endif %}
+              {%- endfor %}
+            </select>
+          </div>
+        </div>
+        </form>
+      </div>
+      <div class="col-lg-6 p-0 m-0">
+        <div class="row py-3 m-1 bg-light">
+          <div class="col font-weight-bold">Order Summary</div>
+        </div>
+        <div class="row py-3 m-1 border-bottom">
+          <div class="col-6 font-weight-bold text-lg-right">Subtotal</div>
+          <div class="col-6 text-right">${{ subtotal }}</div>
+        </div>
+        <div class="row py-3 m-1 border-bottom">
+          <div class="col-6 font-weight-bold text-lg-right">Shipping</div>
+          <div class="col-6 text-right">${{ shipping }}</div>
+        </div>
+        <div class="row py-3 m-1 border-bottom">
+          <div class="col-6 font-weight-bold text-lg-right">Total</div>
+          <div class="col-6 text-right">${{ total }}</div>
+        </div>
+        <div class="row pt-2 m-0">
+          <div id="paypal-button-container" class="col"></div>
+            <script>
+              paypal.Buttons({
+                style: {
+                  shape: 'rect',
+                  color: 'gold',
+                  layout: 'vertical',
+                  label: 'checkout',
+
+                },
+                createOrder: function(data, actions) {
+                  return actions.order.create({
+                    purchase_units: [{
+                      amount: {
+                        "currency": "USD",
+                        "details": {
+                          "subtotal": {{ subtotal }},
+                          "shipping": {{ shipping }}
+                        },
+                        value: '{{ total }}'
+                      }
+                    }]
+                  });
+                },
+                onApprove: function(data, actions) {
+                  return actions.order.capture().then(function(details) {
+                    return fetch('{{ url_for("complete_transaction") }}', {
+                      method: 'post',
+                      headers: {
+                        'content-type': 'application/json'
+                      },
+                      body: JSON.stringify({
+                        orderID: data.orderID
+                      })
+                    }).then(function() {
+                      window.location.href = '{{ url_for("orders") }}/' + data.orderID
+                    });
+                  });
+                },
+                onError: function (err) {
+                  //alert('An error occurred: ' + err);
+                }
+              }).render('#paypal-button-container');
+            </script>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+</div>
+
+{% endblock %}

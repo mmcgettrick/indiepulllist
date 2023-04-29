@@ -1,0 +1,59 @@
+{% macro series_header(title, form) %}
+<div class="h1 p-3 m-1">{{ title }}</div>
+{% if form %}
+<form method="POST" action="">
+{{ form.hidden_tag() }}
+<div class="row p-3 m-1 bg-light">
+  <div class="col-1 font-weight-bold col-form-label">Filters</div>
+  <div class="col-5">{{ form.publishers(onchange="this.form.submit()", class_="form-control") }}</div>
+  <!--
+  <div class="col-1">{{ form.series.label(class_="col-form-label") }}</div>
+  <div class="col-2">{{ form.series(class_="form-control") }}</div>
+  <div class="col-3 pr-0">
+    <button type="submit" class="btn btn-primary"><span class="fa fa-save" title="Submit"></span></button>
+  </div>
+  -->
+</div>
+</form>
+{% endif %}
+<div class="row p-3 m-1 bg-light">
+  <div class="col-2"></div>
+  <div class="col-3 font-weight-bold">Name</div>
+  <div class="col-2 font-weight-bold">Publisher</div>
+  <div class="col-3 font-weight-bold">Creators</div>
+  <div class="col-2"></div>
+</div>
+{% endmacro %}
+
+{% macro series_summary(series, smap={}, unsubscribe=False, current_user=None) %}
+<div class="row p-3 m-1 bg-light">
+  <div class="col-2">
+    <a href="{{ url_for('series') }}/{{ series.id }}">
+      <img style="width: 80px" src="{{ series.artwork_url }}">
+    </a>
+  </div>
+  <div class="col-3">{{ series.name }}</div>
+  <div class="col-2">{{ series.publisher.name }}</div>
+  <div class="col-3">
+    {% for role, creators in series.groupCreatorsByRole().items() %}
+      <div class="row">
+        <div class="col-4">{{ role }}:</div>
+        <div class="col-8">{{ ", ".join(creators) }}</div>
+      </div>
+    {% endfor %}
+  </div>
+  <div class="col-2 pr-0">
+    {% if current_user.is_authenticated %}
+      {% if smap.get(series.id, False) %}
+        {% if unsubscribe %}
+        <a href="{{ url_for('unsubscribe', id=series.id) }}" class="btn btn-warning float-right">Unsubscribe</a>
+        {% else %}
+        <button class="btn btn-secondary float-right" disabled>Subscribed</button>
+        {% endif %}
+      {% else %}
+      <a href="{{ url_for('subscribe', id=series.id) }}" class="btn btn-primary float-right">Subscribe</a>
+      {% endif %}
+    {% endif %}
+  </div>
+</div>
+{% endmacro %}
